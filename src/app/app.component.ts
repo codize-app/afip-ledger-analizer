@@ -11,11 +11,13 @@ export class AppComponent implements OnInit, DoCheck {
   REGDIGITAL_CV_CBTE = '';
   REGDIGITAL_CV_ALICUOTAS = '';
 
+  vat = false;
+
   constructor() {}
 
   ngOnInit(): void {
-    const fileSelector = document.getElementById('voucher');
-    fileSelector?.addEventListener('change', (event: any) => {
+    const fileSelectorVoucher = document.getElementById('voucher');
+    fileSelectorVoucher?.addEventListener('change', (event: any) => {
       this.REGDIGITAL_CV_CBTE = '';
       const fileList = event.target.files;
       const read = new FileReader();
@@ -23,6 +25,18 @@ export class AppComponent implements OnInit, DoCheck {
       read.onloadend = () => {
         console.log(read.result);
         this.REGDIGITAL_CV_CBTE = this.format_REGDIGITAL_CV_CBTE(String(read.result));
+      }
+    });
+
+    const fileSelectorAlicuotas = document.getElementById('ali');
+    fileSelectorAlicuotas?.addEventListener('change', (event: any) => {
+      this.REGDIGITAL_CV_ALICUOTAS = '';
+      const fileList = event.target.files;
+      const read = new FileReader();
+      read.readAsBinaryString(fileList[0]);
+      read.onloadend = () => {
+        console.log(read.result);
+        this.REGDIGITAL_CV_ALICUOTAS = this.format_REGDIGITAL_CV_ALICUOTAS(String(read.result));
       }
     });
   }
@@ -33,7 +47,7 @@ export class AppComponent implements OnInit, DoCheck {
     let f_string = '';
 
     for (const i of s.split('\n')) {
-      let date = '<span class="red campo1">' + i.substring(0, 8) + '</span>';
+      let date = '<span class="red">' + i.substring(0, 8) + '</span>';
       let type = '<span class="green">' + i.substring(8, 11) + '</span>';
       let pdv = '<span class="blue">' + i.substring(11, 16) + '</span>';
       let num = '<span class="yellow">' + i.substring(16, 36) + '</span>';
@@ -60,6 +74,27 @@ export class AppComponent implements OnInit, DoCheck {
 
       f_string += date + type + pdv + num + '                ' + num_partner + cuit + name + total +
       campo10 + campo11 + campo12 + campo13 + campo14 + campo15 + campo16 + currency + rate + ali_qty + campo20 + campo21 + campo22 + campo23 + campo24 + campo25 + '\n';
+    }
+
+    return f_string;
+  }
+
+  format_REGDIGITAL_CV_ALICUOTAS(s: string): string {
+    let f_string = '';
+
+    if (!this.vat) {
+      for (const i of s.split('\n')) {
+        let type = '<span class="red">' + i.substring(0, 3) + '</span>';
+        let pvd = '<span class="green">' + i.substring(3, 8) + '</span>';
+        let num = '<span class="blue">' + i.substring(8, 28) + '</span>';
+        let num_partner = '<span class="yellow">' + i.substring(28, 30) + '</span>';
+        let cuit = '<span class="magent">' + i.substring(30, 50) + '</span>';
+        let neto_gravado = '<span class="cyan">' + i.substring(50, 65) + '</span>';
+        let vat_code = '<span class="red">' + i.substring(65, 69) + '</span>';
+        let vat = '<span class="blue">' + i.substring(69, 84) + '</span>';
+  
+        f_string += type + pvd + num + num_partner + cuit + neto_gravado + vat_code + vat + '\n';
+      }
     }
 
     return f_string;

@@ -1,12 +1,20 @@
 <div class="container">
+  <div class="row mt-2 border-bottom pb-3">
+    <section>
+      IVA Compras
+      <mat-slide-toggle color="accent" [disabled]="true" [(ngModel)]="vat">
+        IVA Ventas
+      </mat-slide-toggle>
+    </section>
+  </div>
   <div class="row mt-2 mb-2">
-    <div class="col-6">
+    <div class="col-6 border-end">
       <h3>Comprobantes</h3>
       <input type="file" id="voucher" accept=".txt" />
     </div>
     <div class="col-6">
       <h3>Alícuotas</h3>
-      <input type="file" id="alñi" accept=".txt" />
+      <input type="file" id="ali" accept=".txt" />
     </div>
   </div>
 
