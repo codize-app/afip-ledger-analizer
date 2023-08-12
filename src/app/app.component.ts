@@ -73,8 +73,8 @@ export class AppComponent implements OnInit, DoCheck {
         let campo24 = '<span class="magent">' + i.substring(280, 310) + '</span>';
         let campo25 = '<span class="cyan">' + i.substring(310, 325) + '</span>';
 
-        f_string += date + type + pdv + num + '                ' + num_partner + cuit + name + total +
-        campo10 + campo11 + campo12 + campo13 + campo14 + campo15 + campo16 + currency + rate + ali_qty + campo20 + campo21 + campo22 + campo23 + campo24 + campo25 + '\n';
+        f_string += '<span class="line">' + date + type + pdv + num + '                ' + num_partner + cuit + name + total +
+        campo10 + campo11 + campo12 + campo13 + campo14 + campo15 + campo16 + currency + rate + ali_qty + campo20 + campo21 + campo22 + campo23 + campo24 + campo25 + '</span>\n';
       }
     } else {
       for (const i of s.split('\n')) {
@@ -101,8 +101,8 @@ export class AppComponent implements OnInit, DoCheck {
         let campo21 = '<span class="blue">' + i.substring(242, 257) + '</span>';
         let campo22 = '<span class="yellow">' + i.substring(258, 265) + '</span>';
 
-        f_string += date + type + pdv + num + num_to + num_partner + cuit + name + total + 
-        campo10 + campo11 + campo12 + campo13 + campo14 + campo15 + campo16 + currency + rate + ali_qty + campo20 + campo21 + campo22 + '\n';
+        f_string += '<span class="line">' + date + type + pdv + num + num_to + num_partner + cuit + name + total + 
+        campo10 + campo11 + campo12 + campo13 + campo14 + campo15 + campo16 + currency + rate + ali_qty + campo20 + campo21 + campo22 + '</span>\n';
       }
     }
 
@@ -123,7 +123,7 @@ export class AppComponent implements OnInit, DoCheck {
         let vat_code = '<span class="red">' + i.substring(65, 69) + '</span>';
         let vat = '<span class="blue">' + i.substring(69, 84) + '</span>';
   
-        f_string += type + pvd + num + num_partner + cuit + neto_gravado + vat_code + vat + '\n';
+        f_string += '<span class="line">' + type + pvd + num + num_partner + cuit + neto_gravado + vat_code + vat + '</span>\n';
       }
     } else {
       for (const i of s.split('\n')) {
@@ -134,7 +134,7 @@ export class AppComponent implements OnInit, DoCheck {
         let vat_code = '<span class="red">' + i.substring(43, 47) + '</span>';
         let vat = '<span class="blue">' + i.substring(47, 62) + '</span>';
   
-        f_string += type + pvd + num + neto_gravado + vat_code + vat + '\n';
+        f_string += '<span class="line">' + type + pvd + num + neto_gravado + vat_code + vat + '</span>\n';
       }
     }
 

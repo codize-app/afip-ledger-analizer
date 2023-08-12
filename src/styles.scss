@@ -13,6 +13,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     padding: 10px;
     overflow: scroll;
     font-size:14px;
+    counter-reset: line-numbering;
+    font-family: Menlo, Monaco, monospace;
+    word-break: break-word;
+}
+
+.txt_area .line::before {
+    content: counter(line-numbering);
+    counter-increment: line-numbering;
+    padding-right: 1em;
+    /* space after numbers */
+    width: 1.5em;
+    text-align: right;
+    opacity: 0.5;
 }
 
 .red {
