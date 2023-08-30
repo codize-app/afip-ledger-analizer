@@ -11,6 +11,11 @@ export class AppComponent implements OnInit, DoCheck {
   REGDIGITAL_CV_CBTE = '';
   REGDIGITAL_CV_ALICUOTAS = '';
 
+  results: any = [];
+  vats: any = [];
+
+  results_process: any = [];
+
   vat = false;
 
   constructor() {}
@@ -19,24 +24,26 @@ export class AppComponent implements OnInit, DoCheck {
     const fileSelectorVoucher = document.getElementById('voucher');
     fileSelectorVoucher?.addEventListener('change', (event: any) => {
       this.REGDIGITAL_CV_CBTE = '';
+      this.results.length = 0;
       const fileList = event.target.files;
       const read = new FileReader();
       read.readAsBinaryString(fileList[0]);
       read.onloadend = () => {
-        console.log(read.result);
         this.REGDIGITAL_CV_CBTE = this.format_REGDIGITAL_CV_CBTE(String(read.result));
+        console.log(this.results);
       }
     });
 
     const fileSelectorAlicuotas = document.getElementById('ali');
     fileSelectorAlicuotas?.addEventListener('change', (event: any) => {
       this.REGDIGITAL_CV_ALICUOTAS = '';
+      this.vats.length = 0;
       const fileList = event.target.files;
       const read = new FileReader();
       read.readAsBinaryString(fileList[0]);
       read.onloadend = () => {
-        console.log(read.result);
         this.REGDIGITAL_CV_ALICUOTAS = this.format_REGDIGITAL_CV_ALICUOTAS(String(read.result));
+        console.log(this.vats);
       }
     });
   }
@@ -75,6 +82,19 @@ export class AppComponent implements OnInit, DoCheck {
 
         f_string += '<span class="line">' + date + type + pdv + num + '                ' + num_partner + cuit + name + total +
         campo10 + campo11 + campo12 + campo13 + campo14 + campo15 + campo16 + currency + rate + ali_qty + campo20 + campo21 + campo22 + campo23 + campo24 + campo25 + '</span>\n';
+        
+        this.results.push({
+          code: i.substring(11, 16) + i.substring(16, 36) + '-' + i.substring(54, 74),
+          status: 'ok',
+          total: this.format_txt_number(i.substring(104, 119)),
+          vat_qty: Number(i.substring(237, 238)),
+          vat_subtotal: 0,
+          campos: this.format_txt_number(i.substring(119, 134)) + this.format_txt_number(i.substring(134, 149)) +
+          this.format_txt_number(i.substring(149, 164)) + this.format_txt_number(i.substring(164, 179)) +
+          this.format_txt_number(i.substring(179, 194)) + this.format_txt_number(i.substring(194, 209)) +
+          this.format_txt_number(i.substring(209, 224)) + this.format_txt_number(i.substring(239, 254)) +
+          this.format_txt_number(i.substring(254, 269))
+        });
       }
     } else {
       for (const i of s.split('\n')) {
@@ -103,6 +123,18 @@ export class AppComponent implements OnInit, DoCheck {
 
         f_string += '<span class="line">' + date + type + pdv + num + num_to + num_partner + cuit + name + total + 
         campo10 + campo11 + campo12 + campo13 + campo14 + campo15 + campo16 + currency + rate + ali_qty + campo20 + campo21 + campo22 + '</span>\n';
+      
+        this.results.push({
+          code: i.substring(11, 16) + i.substring(16, 36),
+          status: 'ok',
+          total: this.format_txt_number(i.substring(108, 123)),
+          vat_qty: Number(i.substring(241, 242)),
+          vat_subtotal: 0,
+          campos: this.format_txt_number(i.substring(123, 138)) + this.format_txt_number(i.substring(138, 153)) +
+          this.format_txt_number(i.substring(153, 168)) + this.format_txt_number(i.substring(168, 183)) +
+          this.format_txt_number(i.substring(183, 198)) + this.format_txt_number(i.substring(198, 213)) +
+          this.format_txt_number(i.substring(213, 228)) + this.format_txt_number(i.substring(242, 257))
+        });
       }
     }
 
@@ -124,6 +156,16 @@ export class AppComponent implements OnInit, DoCheck {
         let vat = '<span class="blue">' + i.substring(69, 84) + '</span>';
   
         f_string += '<span class="line">' + type + pvd + num + num_partner + cuit + neto_gravado + vat_code + vat + '</span>\n';
+        
+        let base = this.format_txt_number(i.substring(50, 65));
+        let v_import = this.format_txt_number(i.substring(69, 84));
+        
+        this.vats.push({
+          code: i.substring(3, 8) + i.substring(8, 28) + '-' + i.substring(30, 50),
+          base: base,
+          import: v_import,
+          subtotal: (base + v_import).toFixed(2)
+        });
       }
     } else {
       for (const i of s.split('\n')) {
@@ -135,9 +177,46 @@ export class AppComponent implements OnInit, DoCheck {
         let vat = '<span class="blue">' + i.substring(47, 62) + '</span>';
   
         f_string += '<span class="line">' + type + pvd + num + neto_gravado + vat_code + vat + '</span>\n';
+
+        let base = this.format_txt_number(i.substring(47, 62));
+        let v_import = this.format_txt_number(i.substring(28, 43));
+
+        this.vats.push({
+          code: i.substring(3, 8) + i.substring(8, 28),
+          base: base,
+          import: v_import,
+          subtotal: (base + v_import).toFixed(2)
+        });
       }
     }
 
     return f_string;
+  }
+
+  format_txt_number(s: string): number {
+    let n = 0;
+
+    n = Number(s) / 100;
+
+    return n;
+  }
+
+  process(): void {
+    this.results_process.length = 0;
+    this.results_process = [...this.results];
+    if (this.results.length > 0 && this.vats.length > 0) {
+      for (const vou of this.results_process) {
+        if (vou.vat_qty > 0) {
+          const vats = this.vats.filter((e: any) => e.code === vou.code);
+          vou.vats = vats;
+
+          for (const v of vou.vats) {
+            vou.vat_subtotal += +v.subtotal;
+          }
+        }
+      }
+    }
+
+    console.log(this.results_process);
   }
 }

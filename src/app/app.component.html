@@ -8,13 +8,16 @@
     </section>
   </div>
   <div class="row mt-2 mb-2">
-    <div class="col-6 border-end">
+    <div class="col-4 border-end overflow-hidden">
       <h3>Comprobantes</h3>
       <input type="file" id="voucher" accept=".txt" />
     </div>
-    <div class="col-6">
+    <div class="col-4 border-end overflow-hidden">
       <h3>Alícuotas</h3>
       <input type="file" id="ali" accept=".txt" />
+    </div>
+    <div class="col-4 text-end overflow-hidden">
+      <button mat-raised-button color="primary" class="mt-4" (click)="process()">Procesar TXT</button>
     </div>
   </div>
 
@@ -28,5 +31,26 @@
   <div class="row">
     <h3>Alícuotas</h3>
     <pre class="txt_area" spellcheck="false" [innerHTML]="REGDIGITAL_CV_ALICUOTAS"></pre>
+  </div>
+
+  <div class="row">
+    <h3>Procesados</h3>
+    <div class="txt_area_process" spellcheck="false">
+      <p *ngFor="let re of results_process" class="mb-2" class="alert bg-success text-white">
+        <b>{{re.code}}</b> - Total: {{re.total}} - Suma de Totales: {{re.campos}}
+        <span *ngFor="let t of re.vats">
+          <br/>
+          <span class="pe-4">&emsp;</span>Base: {{t.base}} - Importe: {{t.import}} - Subtotal IVA: {{t.subtotal}}
+        </span>
+        <span *ngIf="vat">
+          <br/>
+          Total: {{re.vat_subtotal + re.campos}}
+        </span>
+        <span *ngIf="!vat">
+          <br/>
+          Total: {{re.campos}}
+        </span>
+      </p>
+    </div>
   </div>
 </div>
