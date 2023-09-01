@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="row mt-2 border-bottom pb-3">
+  <div class="row mt-4 border-bottom pb-3">
     <section>
       IVA Compras
       <mat-slide-toggle color="accent" [(ngModel)]="vat">
@@ -17,40 +17,66 @@
       <input type="file" id="ali" accept=".txt" />
     </div>
     <div class="col-4 text-end overflow-hidden">
-      <button mat-raised-button color="primary" class="mt-4" (click)="process()">Procesar TXT</button>
+      <button mat-raised-button color="primary" class="mt-4" (click)="process()" [disabled]="results.length === 0 || vats.length === 0">Procesar TXT</button>
     </div>
   </div>
 
   <hr>
 
-  <div class="row">
-    <h3>Comprobantes</h3>
-    <pre class="txt_area" spellcheck="false" [innerHTML]="REGDIGITAL_CV_CBTE"></pre>
-  </div>
+  <mat-accordion class="example-headers-align" multi>
+    <mat-expansion-panel [disabled]="results.length === 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Comprobantes</mat-panel-title>
+      </mat-expansion-panel-header>
 
-  <div class="row">
-    <h3>Alícuotas</h3>
-    <pre class="txt_area" spellcheck="false" [innerHTML]="REGDIGITAL_CV_ALICUOTAS"></pre>
-  </div>
+      <div class="row">
+        <pre class="txt_area" spellcheck="false" [innerHTML]="REGDIGITAL_CV_CBTE"></pre>
+      </div>
+    </mat-expansion-panel>
 
-  <div class="row">
-    <h3>Procesados</h3>
-    <div class="txt_area_process" spellcheck="false">
-      <p *ngFor="let re of results_process" class="mb-2" class="alert bg-success text-white">
-        <b>{{re.code}}</b> - Total: {{re.total}} - Suma de Totales: {{re.campos}}
-        <span *ngFor="let t of re.vats">
-          <br/>
-          <span class="pe-4">&emsp;</span>Base: {{t.base}} - Importe: {{t.import}} - Subtotal IVA: {{t.subtotal}}
-        </span>
-        <span *ngIf="vat">
-          <br/>
-          Total: {{re.vat_subtotal + re.campos}}
-        </span>
-        <span *ngIf="!vat">
-          <br/>
-          Total: {{re.campos}}
-        </span>
-      </p>
-    </div>
-  </div>
+    <mat-expansion-panel [disabled]="vats.length === 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Alícuotas</mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="row">
+        <pre class="txt_area" spellcheck="false" [innerHTML]="REGDIGITAL_CV_ALICUOTAS"></pre>
+      </div>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [disabled]="results_process.length === 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Procesados</mat-panel-title>
+        <mat-panel-description>
+          <span [ngClass]="{'bg-secondary': errors == 0, 'bg-danger': errors > 0}" class="badge" style="position:absolute;right:60px;">
+            {{errors}}
+          </span>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <div class="row">
+        <div class="txt_area_process" spellcheck="false">
+          <p *ngFor="let re of results_process" class="mb-2" [ngClass]="{'bg-success': re.status == 'ok', 'bg-danger': re.status == 'err'}" class="alert text-white">
+            <b>{{re.code}}</b>
+            <br />
+            Total: {{re.total | currency:'ARS':'symbol':'':'es-AR'}} - Tributos: {{re.campos | currency:'ARS':'symbol':'':'es-AR'}}
+            <span *ngFor="let t of re.vats">
+              <br/>
+              <span class="pe-4">&emsp;</span>
+              Base: {{t.base | currency:'ARS':'symbol':'':'es-AR'}} - Importe: {{t.import | currency:'ARS':'symbol':'':'es-AR'}} - Subtotal IVA: {{t.subtotal | currency:'ARS':'symbol':'':'es-AR'}}
+            </span>
+            <span>
+              <br/>
+              Total Calculado: {{re.vat_subtotal + re.campos | currency:'ARS':'symbol':'':'es-AR'}}
+            </span>
+            <span *ngIf="re.error !== ''">
+              <br/><br/>
+              <b>Errores: {{re.error}}</b>
+            </span>
+          </p>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
 </div>

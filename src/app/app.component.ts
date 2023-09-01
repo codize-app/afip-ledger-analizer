@@ -14,6 +14,8 @@ export class AppComponent implements OnInit, DoCheck {
   results: any = [];
   vats: any = [];
 
+  errors = 0;
+
   results_process: any = [];
 
   vat = false;
@@ -86,14 +88,14 @@ export class AppComponent implements OnInit, DoCheck {
         this.results.push({
           code: i.substring(11, 16) + i.substring(16, 36) + '-' + i.substring(54, 74),
           status: 'ok',
+          error: '',
           total: this.format_txt_number(i.substring(104, 119)),
           vat_qty: Number(i.substring(237, 238)),
           vat_subtotal: 0,
           campos: this.format_txt_number(i.substring(119, 134)) + this.format_txt_number(i.substring(134, 149)) +
           this.format_txt_number(i.substring(149, 164)) + this.format_txt_number(i.substring(164, 179)) +
           this.format_txt_number(i.substring(179, 194)) + this.format_txt_number(i.substring(194, 209)) +
-          this.format_txt_number(i.substring(209, 224)) + this.format_txt_number(i.substring(239, 254)) +
-          this.format_txt_number(i.substring(254, 269))
+          this.format_txt_number(i.substring(209, 224))
         });
       }
     } else {
@@ -127,6 +129,7 @@ export class AppComponent implements OnInit, DoCheck {
         this.results.push({
           code: i.substring(11, 16) + i.substring(16, 36),
           status: 'ok',
+          error: '',
           total: this.format_txt_number(i.substring(108, 123)),
           vat_qty: Number(i.substring(241, 242)),
           vat_subtotal: 0,
@@ -157,8 +160,8 @@ export class AppComponent implements OnInit, DoCheck {
   
         f_string += '<span class="line">' + type + pvd + num + num_partner + cuit + neto_gravado + vat_code + vat + '</span>\n';
         
-        let base = this.format_txt_number(i.substring(50, 65));
-        let v_import = this.format_txt_number(i.substring(69, 84));
+        let base = this.format_txt_number(i.substring(69, 84));
+        let v_import = this.format_txt_number(i.substring(50, 65));
         
         this.vats.push({
           code: i.substring(3, 8) + i.substring(8, 28) + '-' + i.substring(30, 50),
@@ -202,6 +205,7 @@ export class AppComponent implements OnInit, DoCheck {
   }
 
   process(): void {
+    this.errors = 0;
     this.results_process.length = 0;
     this.results_process = [...this.results];
     if (this.results.length > 0 && this.vats.length > 0) {
@@ -212,6 +216,12 @@ export class AppComponent implements OnInit, DoCheck {
 
           for (const v of vou.vats) {
             vou.vat_subtotal += +v.subtotal;
+          }
+
+          if (vou.total !== (vou.vat_subtotal + vou.campos)) {
+            vou.status = 'err';
+            vou.error += 'El monto total y el monto calculado no coinciden. ';
+            this.errors = this.errors + 1;
           }
         }
       }
